@@ -42,6 +42,23 @@ const Index = () => {
     });
   };
 
+  const [newDeveloper, setNewDeveloper] = useState({ name: "", location: "", technologies: "" });
+
+  const addDeveloper = async () => {
+    const techArray = newDeveloper.technologies.split(",").map((tech) => tech.trim());
+    const success = await client.set(`developer:${newDeveloper.name}`, { ...newDeveloper, technologies: techArray });
+    if (success) {
+      toast({
+        title: "Developer added",
+        description: `${newDeveloper.name} has been added to the database.`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      fetchDevelopers();
+    }
+  };
+
   return (
     <Box p={5}>
       <VStack spacing={5}>
@@ -70,6 +87,12 @@ const Index = () => {
             </Flex>
           ))}
         </VStack>
+        <Input placeholder="Name" value={newDeveloper.name} onChange={(e) => setNewDeveloper({ ...newDeveloper, name: e.target.value })} size="lg" />
+        <Input placeholder="Location" value={newDeveloper.location} onChange={(e) => setNewDeveloper({ ...newDeveloper, location: e.target.value })} size="lg" />
+        <Input placeholder="Technologies (comma-separated)" value={newDeveloper.technologies} onChange={(e) => setNewDeveloper({ ...newDeveloper, technologies: e.target.value })} size="lg" />
+        <Button colorScheme="green" onClick={addDeveloper}>
+          Add Developer
+        </Button>
       </VStack>
     </Box>
   );
